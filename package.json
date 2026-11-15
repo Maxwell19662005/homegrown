@@ -5,12 +5,12 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start -p ${PORT:-3000}",
+    "start": "node scripts/seed.mjs && next start -p ${PORT:-3000}",
     "seed": "node scripts/seed.mjs",
     "lint": "next lint"
   },
   "engines": {
-    "node": ">=20"
+    "node": "22.x"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",

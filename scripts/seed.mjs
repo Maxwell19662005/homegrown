@@ -1,6 +1,11 @@
 // Adds demo accounts and listings around Ridgewood, Queens so you can try the app.
 // Usage: npm run seed            (skips if data already exists)
 //        npm run seed -- --force  (adds demo data anyway)
+//
+// Local (NODE_ENV not "production"): every demo account uses password123.
+// Production: the admin account is created only if ADMIN_PASSWORD is set, demo sellers get
+// random passwords nobody knows (they can't be logged into), no demo buyer is created, and demo
+// listings are added only when SEED_DEMO=1.
 import Database from 'better-sqlite3';
 import bcrypt from 'bcryptjs';
 import fs from 'node:fs';
@@ -20,11 +25,13 @@ if (count > 0 && !force) {
   process.exit(0);
 }
 
+const prod = process.env.NODE_ENV === 'production';
 const id = (p) => p + '_' + crypto.randomBytes(9).toString('base64url');
-const hash = bcrypt.hashSync('password123', 10);
+const demoHash = bcrypt.hashSync(prod ? crypto.randomBytes(24).toString('base64url') : 'password123', 10);
 const adminEmail = (process.env.ADMIN_EMAIL || 'admin@example.com').toLowerCase();
+const adminPassword = process.env.ADMIN_PASSWORD || (prod ? '' : 'password123');
 
-function user(email, name, hood, role = 'user') {
+function user(email, name, hood, role = 'user', hash = demoHash) {
   const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
   if (existing) return existing.id;
   const uid = id('usr');
@@ -32,8 +39,12 @@ function user(email, name, hood, role = 'user') {
   return uid;
 }
 
-user(adminEmail, 'Admin', 'Ridgewood', 'admin');
-user('buyer@example.com', 'Jordan', 'Ridgewood');
+if (adminPassword) user(adminEmail, 'Admin', 'Ridgewood', 'admin', bcrypt.hashSync(adminPassword, 10));
+if (!prod) user('buyer@example.com', 'Jordan', 'Ridgewood');
+if (prod && process.env.SEED_DEMO !== '1') {
+  console.log(adminPassword ? `Created admin account ${adminEmail}. No demo listings (set SEED_DEMO=1 to add them).` : 'Nothing to seed.');
+  process.exit(0);
+}
 
 const HOODS = { Ridgewood: [40.7043, -73.9018], Bushwick: [40.6944, -73.9213], Maspeth: [40.723, -73.9126] };
 const sellers = [
@@ -51,7 +62,7 @@ for (const s of sellers) {
   db.prepare(
     `INSERT OR IGNORE INTO seller_profiles (user_id, type, display_name, bio, neighborhood, pickup_address, phone, status)
      VALUES (?, ?, ?, ?, ?, ?, ?, 'approved')`,
-  ).run(uid, s.type, s.shop, s.bio, s.hood, '1B Sample St (demo address)', '(718) 555-0100');
+  ).run(uid, s.type, s.shop, (prod ? 'Demo shop — ' : '') + s.bio, s.hood, '1B Sample St (demo address)', '(718) 555-0100');
 }
 
 // Pickup windows land on today (or tomorrow if it's late) at sensible hours, New York time.
@@ -82,4 +93,6 @@ for (const [shop, cat, title, desc, unit, price, qty, startH, endH, allergens = 
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'home', 'Ring the side gate', ?, ?, ?, ?)`,
   ).run(id('lst'), sellerIds[shop], cat, title, desc, unit, price, qty, qty, at(startH), at(endH), allergens, s.hood, lat + j(), lng + j());
 }
-console.log(`Seeded demo data. Log in as buyer@example.com / password123, any seller (e.g. rosa@example.com), or ${adminEmail} (admin), all with password123.`);
+console.log(prod
+  ? `Seeded demo listings.${adminPassword ? ` Admin: ${adminEmail}` : ''}`
+  : `Seeded demo data. Log in as buyer@example.com / password123, any seller (e.g. rosa@example.com), or ${adminEmail} (admin), all with password123.`);
