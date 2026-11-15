@@ -114,6 +114,14 @@ function check(cond, msg) { if (!cond) throw new Error('FAILED: ' + msg); consol
   await g.getByRole('button', { name: 'Post listing' }).click();
   await g.waitForURL(/sell\?notice=/);
   check(await vis(g.getByText('Your listing is live')), 'listing posted');
+  await g.goto(B + '/sell/listings/new');
+  await g.locator('label', { hasText: 'Eggs & honey' }).click();
+  await g.fill('input[name=title]', 'Fresh eggs'); await g.fill('input[name=price]', '6');
+  await g.getByRole('button', { name: 'Post listing' }).click();
+  check(await vis(g.getByRole('alert').filter({ hasText: 'Egg sales are paused' })), 'egg listings paused');
+  await g.fill('input[name=title]', 'Lavender infused honey');
+  await g.getByRole('button', { name: 'Post listing' }).click();
+  check(await vis(g.getByRole('alert').filter({ hasText: 'Only pure honey' })), 'flavored honey blocked');
   await buyer.goto(B + '/?q=basil');
   check(await vis(buyer.getByText('Thai basil bunch')), 'new listing visible to buyers');
   check(await buyer.locator('img[alt="Thai basil bunch"]').count() === 1, 'listing photo shown');
@@ -169,10 +177,23 @@ function check(cond, msg) { if (!cond) throw new Error('FAILED: ' + msg); consol
   await k.getByRole('button', { name: 'Post listing' }).click();
   check(await vis(k.getByRole('alert').filter({ hasText: 'need refrigeration' })), 'refrigerated item blocked');
   await snap(k, 'blocked-item');
+  await k.fill('input[name=title]', 'Chocolate chip cookies');
+  await k.getByRole('button', { name: 'Post listing' }).click();
+  check(await vis(k.getByRole('alert').filter({ hasText: 'don’t allow chocolate' })), 'chocolate item blocked');
   await k.fill('input[name=title]', 'Brown butter shortbread'); await k.fill('textarea[name=description]', 'Six cookies per bag.');
   await k.getByRole('button', { name: 'Post listing' }).click();
   await k.waitForURL(/sell\?notice=/);
   check(await vis(k.getByText('Brown butter shortbread')), 'approved baker can post');
+
+  // Report a listing without buying it
+  await buyer.goto(B + '/?q=honey'); await buyer.getByText('Raw wildflower honey').click();
+  await buyer.getByRole('link', { name: 'Report this listing' }).click();
+  await buyer.check('input[value=other]');
+  await buyer.fill('textarea[name=details]', 'Looks like store-bought honey relabeled.');
+  await buyer.getByRole('button', { name: 'Send report' }).click();
+  check(await vis(buyer.getByText('Thanks for the report')), 'listing report sent');
+  await admin.goto(B + '/admin');
+  check(await vis(admin.getByText('Looks like store-bought honey')), 'admin sees listing report');
 
   // 7. Buyer cancels a reservation -> stock restored
   await buyer.goto(B + '/?q=seedlings'); await buyer.getByText('Pepper & tomato seedlings').click();

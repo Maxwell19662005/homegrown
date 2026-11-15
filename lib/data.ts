@@ -373,6 +373,22 @@ export function fileReport(args: { orderId: string; reporterId: string; kind: 'f
   })();
 }
 
+/** Anyone signed in can report a listing without buying it. Food-safety reports pause the listing too. */
+export function fileListingReport(args: { listingId: string; reporterId: string; kind: 'food_safety' | 'other'; details: string }) {
+  const l = db().prepare(`SELECT id, seller_id FROM listings WHERE id = ?`).get(args.listingId) as { id: string; seller_id: string } | undefined;
+  if (!l) throw new UserError('Listing not found.');
+  if (l.seller_id === args.reporterId) throw new UserError('You can’t report your own listing.');
+  if (args.details.trim().length < 10) throw new UserError('Please describe the problem.');
+  const dup = db().prepare(`SELECT 1 FROM reports WHERE listing_id = ? AND reporter_id = ? AND status = 'open'`).get(l.id, args.reporterId);
+  if (dup) throw new UserError('You’ve already reported this listing. Our team is looking into it.');
+  db().transaction(() => {
+    db()
+      .prepare(`INSERT INTO reports (id, listing_id, order_id, reporter_id, seller_id, kind, details) VALUES (?, ?, NULL, ?, ?, ?, ?)`)
+      .run(newId('rpt'), l.id, args.reporterId, l.seller_id, args.kind, args.details.slice(0, 3000));
+    if (args.kind === 'food_safety') setListingStatus(l.id, null, 'suspended');
+  })();
+}
+
 export type ReportView = {
   id: string;
   kind: string;

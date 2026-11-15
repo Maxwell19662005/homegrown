@@ -2,7 +2,7 @@
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { requireUser } from '@/lib/auth';
-import { addReview, attachCheckoutSession, cancelOrder, createOrder, fileReport, getOrder, getSellerProfile, markCheckoutExpired } from '@/lib/data';
+import { addReview, attachCheckoutSession, cancelOrder, createOrder, fileListingReport, fileReport, getOrder, getSellerProfile, markCheckoutExpired } from '@/lib/data';
 import { createCheckoutSession, demoPayments } from '@/lib/payments';
 import { guard, str } from '@/lib/actions-util';
 import { db } from '@/lib/db';
@@ -62,4 +62,12 @@ export async function report(form: FormData) {
   const kind = form.get('kind') === 'food_safety' ? 'food_safety' : 'other';
   await guard(`/orders/${id}/report`, () => fileReport({ orderId: id, reporterId: user.id, kind, details: str(form, 'details', 3000) }));
   redirect(`/orders/${id}?notice=${encodeURIComponent('Thank you. Our team will contact you within 1 hour.' )}`);
+}
+
+export async function reportListing(form: FormData) {
+  const id = str(form, 'listing_id');
+  const user = await requireUser(`/listings/${id}/report`);
+  const kind = form.get('kind') === 'food_safety' ? 'food_safety' : 'other';
+  await guard(`/listings/${id}/report`, () => fileListingReport({ listingId: id, reporterId: user.id, kind, details: str(form, 'details', 3000) }));
+  redirect(`/?notice=${encodeURIComponent('Thanks for the report. Our team will look into it.')}`);
 }

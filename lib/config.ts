@@ -23,9 +23,9 @@ export const SELLER_TYPES: Record<
 > = {
   grower: {
     title: 'Backyard grower',
-    sub: 'Vegetables, herbs, fruit, eggs or honey from your yard or rooftop',
+    sub: 'Vegetables, herbs, fruit or honey from your yard or rooftop',
     setup: 'About 5 minutes to set up',
-    categories: ['produce', 'eggs', 'plants'],
+    categories: ['produce', 'eggs'],
     needsReview: false,
   },
   baker: {
@@ -45,9 +45,9 @@ export const SELLER_TYPES: Record<
   plants: {
     title: 'Plants & seedlings',
     sub: 'Seedlings, herbs and houseplants you started yourself',
-    setup: 'About 5 minutes to set up',
+    setup: 'Registration check, about 2 days',
     categories: ['plants'],
-    needsReview: false,
+    needsReview: true,
   },
 };
 
@@ -79,7 +79,7 @@ export const REQUIREMENTS: Record<SellerType, Requirement[]> = {
   ],
   plants: [
     phone,
-    { key: 'nursery', title: 'Nursery license check', detail: 'I’ve checked whether I need a NY nursery license for the volume I sell', kind: 'check' },
+    { key: 'nursery', title: 'NY Plant Grower registration', detail: 'Upload your registration certificate from NY Agriculture & Markets (form PI-69)', kind: 'upload' },
     payout,
   ],
 };
@@ -88,6 +88,19 @@ export const ALLERGENS = ['Wheat', 'Milk', 'Eggs', 'Peanuts', 'Tree nuts', 'Soy'
 
 // Words that suggest a baked listing needs refrigeration and falls outside NY's home-processor rules.
 // Starter list only: have your attorney finalize it.
+// NY's Home Processor exemption excludes chocolate items.
+export const CHOCOLATE_TERMS = ['chocolate', 'cocoa', 'cacao', 'fudge', 'brownie', 'truffle'];
+
+// Egg sales are paused until NY's small-flock rules (licensing, carton labels) are confirmed.
+// Set to true once your attorney or NY Agriculture & Markets confirms what sellers need.
+export const ALLOW_EGG_LISTINGS = false;
+
+// Honey is exempt from NY's food-processing license only when it's pure honey from the seller's own hives.
+export const HONEY_ADDITIVE_TERMS = ['infused', 'flavored', 'flavoured', 'spiced', 'creamed with', 'whipped with'];
+
+// Where buyers and sellers can reach you. Set SUPPORT_EMAIL on your host.
+export const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || '';
+
 export const PROHIBITED_BAKED_TERMS = [
   'cheesecake', 'custard', 'cream pie', 'whipped cream', 'cream cheese', 'meringue', 'flan', 'tres leches',
   'meat', 'chicken', 'beef', 'pork', 'fish', 'sushi', 'empanada',

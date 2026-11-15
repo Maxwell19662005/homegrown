@@ -16,7 +16,7 @@ import {
   updateSellerDetails,
   UserError,
 } from '@/lib/data';
-import { ALLERGENS, Category, PROHIBITED_BAKED_TERMS, REQUIREMENTS, SELLER_TYPES, SellerType } from '@/lib/config';
+import { ALLERGENS, ALLOW_EGG_LISTINGS, Category, CHOCOLATE_TERMS, HONEY_ADDITIVE_TERMS, PROHIBITED_BAKED_TERMS, REQUIREMENTS, SELLER_TYPES, SellerType } from '@/lib/config';
 import { findNeighborhood, fuzzyPoint, NEIGHBORHOODS } from '@/lib/neighborhoods';
 import { saveUpload } from '@/lib/uploads';
 import { guard, str } from '@/lib/actions-util';
@@ -151,8 +151,17 @@ export async function newListing(prev: ListingFormState, form: FormData): Promis
     if (!noAllergens && allergenList.length === 0) fail('Select the allergens in this item, or confirm it has none.');
     allergens = noAllergens ? 'none' : allergenList.join(', ');
     const text = `${title} ${description}`.toLowerCase();
+    const choc = CHOCOLATE_TERMS.find((t) => text.includes(t));
+    if (choc) fail(`New York’s home-kitchen rules don’t allow chocolate items (“${choc}”). Contact us if you think this is a mistake.`);
     const hit = PROHIBITED_BAKED_TERMS.find((t) => text.includes(t));
     if (hit) fail(`Items with “${hit}” usually need refrigeration, which NY doesn’t allow for home kitchens. Contact us if you think this is a mistake.`);
+  }
+
+  if (category === 'eggs') {
+    const text = `${title} ${description}`.toLowerCase();
+    if (!ALLOW_EGG_LISTINGS && /\beggs?\b/.test(text)) fail('Egg sales are paused while we confirm New York’s rules for small flocks. Honey is fine to list.');
+    const add = HONEY_ADDITIVE_TERMS.find((t) => text.includes(t));
+    if (add) fail(`Only pure honey from your own hives can be sold without a NY food-processing license (“${add}” suggests added ingredients).`);
   }
 
   const photoFile = form.get('photo');

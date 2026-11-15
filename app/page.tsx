@@ -7,10 +7,11 @@ import { getFeed } from '@/lib/data';
 import { NEIGHBORHOODS } from '@/lib/neighborhoods';
 import { viewerNeighborhood } from '@/lib/viewer';
 import { AutoSubmitSelect } from '@/components/AutoSubmitSelect';
+import { Alert } from '@/components/ui';
 
 export const dynamic = 'force-dynamic';
 
-type SP = { cat?: string; q?: string; n?: string };
+type SP = { cat?: string; q?: string; n?: string; notice?: string };
 
 export default async function Discover({ searchParams }: { searchParams: Promise<SP> }) {
   const sp = await searchParams;
@@ -46,6 +47,7 @@ export default async function Discover({ searchParams }: { searchParams: Promise
           </form>
           <span className="shrink-0 pl-3 font-display text-xl font-bold text-leaf">homegrown</span>
         </div>
+        <Alert notice={sp.notice} />
         <h1 className="font-display text-[32px] font-bold leading-[1.05] tracking-tight">Fresh near you</h1>
         <form method="get" role="search">
           {cat !== 'all' && <input type="hidden" name="cat" value={cat} />}

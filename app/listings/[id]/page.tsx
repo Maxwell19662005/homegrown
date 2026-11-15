@@ -63,6 +63,11 @@ export default async function ListingPage({ params, searchParams }: { params: Pr
             <span className="text-[13px] leading-snug text-[#5C4310]">Made in a home kitchen registered with NY Agriculture &amp; Markets. Not inspected by the NYC Health Department.</span>
           </div>
         )}
+        {!isOwn && (
+          <Link href={`/listings/${l.id}/report`} className="flex items-center gap-1.5 self-center text-sm font-semibold text-muted underline">
+            <Icon d={I.flag} size={16} /> Report this listing
+          </Link>
+        )}
       </div>
       {isOwn ? (
         <div className="fixed inset-x-0 bottom-0 border-t border-line bg-white p-4"><div className="mx-auto max-w-md"><Link href="/sell" className="btn-outline w-full">This is your listing — manage it</Link></div></div>
