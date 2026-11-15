@@ -6,7 +6,7 @@ import { SubmitButton } from '@/components/SubmitButton';
 import { NeighborhoodSelect } from '@/components/NeighborhoodSelect';
 import { CATEGORY_PATHS, I, Icon } from '@/components/Icons';
 import { requireUser } from '@/lib/auth';
-import { getSellerProfile, sellerListings, sellerOrders, sellerStats } from '@/lib/data';
+import { getSellerProfile, sellerCanBePaid, sellerListings, sellerOrders, sellerStats } from '@/lib/data';
 import { CATEGORIES, SELLER_COMMISSION, SELLER_TYPES, SellerType } from '@/lib/config';
 import { money, money2, pickupWindow } from '@/lib/format';
 import { changeListing, confirmPickup, sellerCancel, startSelling } from '../actions/seller';
@@ -90,6 +90,13 @@ export default async function SellPage({ searchParams }: { searchParams: Promise
           <Link href="/sell/setup" className="btn-outline min-h-10 px-3 text-sm">Settings</Link>
         </div>
         <Alert error={sp.error} notice={sp.notice} />
+        {!sellerCanBePaid(user.id) && (
+          <div className="flex flex-col gap-2 rounded-2xl border-2 border-tomato bg-tomato-soft p-4">
+            <span className="font-bold text-tomato-ink">Connect your bank to start selling</span>
+            <span className="text-sm text-tomato-ink">Buyers can’t see your listings until your payouts are set up with Stripe. It takes about 5 minutes.</span>
+            <a href="/api/stripe/connect" className="btn-primary self-start">Connect with Stripe</a>
+          </div>
+        )}
         <div className="grid grid-cols-3 gap-2.5">
           <Stat label="Upcoming" value={String(stats.upcoming)} />
           <Stat label="Completed" value={String(stats.completed)} />

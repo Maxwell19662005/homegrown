@@ -13,7 +13,7 @@ import {
   SellerType,
 } from './config';
 import { findNeighborhood, milesBetween } from './neighborhoods';
-import { refundPayment } from './payments';
+import { demoPayments, refundPayment } from './payments';
 
 // ---------- Types ----------
 
@@ -121,6 +121,24 @@ export function releaseExpiredHolds() {
   })();
 }
 
+// ---------- Payout readiness ----------
+
+/** With real payments on, a seller can only be paid once their Stripe payouts are connected. */
+const PAYOUTS_READY_SQL = `EXISTS (SELECT 1 FROM seller_requirements pr WHERE pr.user_id = l.seller_id AND pr.key = 'payout' AND pr.done = 1 AND pr.value = 'stripe')`;
+
+export function sellerCanBePaid(sellerId: string): boolean {
+  if (demoPayments) return true;
+  const r = db().prepare(`SELECT done, value FROM seller_requirements WHERE user_id = ? AND key = 'payout'`).get(sellerId) as { done: number; value: string } | undefined;
+  return !!r?.done && r.value === 'stripe';
+}
+
+/** A requirement counts as done; demo-mode payouts don't count once real payments are on. */
+export function isRequirementDone(key: string, s?: { done: number; value: string }): boolean {
+  if (!s?.done) return false;
+  if (key === 'payout' && !demoPayments) return s.value === 'stripe';
+  return true;
+}
+
 // ---------- Listings ----------
 
 const LISTING_SELECT = `
@@ -142,6 +160,7 @@ export function getFeed(opts: { neighborhood: string; category?: string; q?: str
   const from = findNeighborhood(opts.neighborhood);
   const params: unknown[] = [nowIso()];
   let where = `l.status = 'active' AND sp.status = 'approved' AND l.pickup_end > ? AND l.quantity_left > 0`;
+  if (!demoPayments) where += ` AND ${PAYOUTS_READY_SQL}`;
   if (opts.category && opts.category !== 'all') {
     where += ' AND l.category = ?';
     params.push(opts.category);
@@ -204,6 +223,7 @@ export function createOrder(buyerId: string, listingId: string, qty: number, dem
       | undefined;
     if (!l || !isListingAvailable(l, l.seller_status)) throw new UserError('Sorry, this listing is no longer available.');
     if (l.seller_id === buyerId) throw new UserError('You can’t reserve your own listing.');
+    if (!sellerCanBePaid(l.seller_id)) throw new UserError('This seller is still setting up payments. Check back soon.');
     if (!Number.isInteger(qty) || qty < 1) throw new UserError('Choose a quantity.');
     if (qty > l.quantity_left) throw new UserError(`Only ${l.quantity_left} left.`);
     const item = l.price_cents * qty;
@@ -441,7 +461,7 @@ export function refreshSellerStatus(userId: string) {
   const p = getSellerProfile(userId);
   if (!p || !['setup', 'rejected'].includes(p.status)) return;
   const reqs = getRequirements(userId);
-  const allDone = REQUIREMENTS[p.type].every((r) => reqs[r.key]?.done);
+  const allDone = REQUIREMENTS[p.type].every((r) => isRequirementDone(r.key, reqs[r.key]));
   if (!allDone || !p.pickup_address.trim()) return;
   const next = SELLER_TYPES[p.type].needsReview ? 'pending' : 'approved';
   db().prepare(`UPDATE seller_profiles SET status = ?, review_note = '' WHERE user_id = ?`).run(next, userId);

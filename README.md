@@ -59,6 +59,8 @@ Without Stripe keys the app runs in **demo payments mode**: reservations go thro
    Put its signing secret in `STRIPE_WEBHOOK_SECRET`.
 4. Set `APP_URL` to your public URL.
 
+Once Stripe is on, a seller's listings only appear after they connect their bank through Stripe (Shop → Connect with Stripe). Sellers who finished setup in demo mode are asked to connect.
+
 Money flow: the buyer pays the item price plus the service fee. Stripe sends the item price minus the 10% commission to the seller's connected account. The platform keeps the fee and the commission. Refunds reverse the transfer and the platform fee.
 
 ## Deploy

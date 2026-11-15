@@ -72,5 +72,6 @@ export async function createConnectOnboardingLink(existingAccount: string | null
 export async function accountReady(account: string): Promise<boolean> {
   if (!stripe) return false;
   const a = await stripe.accounts.retrieve(account);
-  return !!a.charges_enabled && !!a.payouts_enabled;
+  // Destination charges only need the transfers capability; payouts can finish verifying later.
+  return a.capabilities?.transfers === 'active';
 }

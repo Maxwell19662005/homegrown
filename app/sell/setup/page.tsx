@@ -4,7 +4,7 @@ import { SubmitButton } from '@/components/SubmitButton';
 import { NeighborhoodSelect } from '@/components/NeighborhoodSelect';
 import { I, Icon } from '@/components/Icons';
 import { requireUser } from '@/lib/auth';
-import { getRequirements, getSellerProfile, RequirementState } from '@/lib/data';
+import { getRequirements, getSellerProfile, isRequirementDone, RequirementState } from '@/lib/data';
 import { Requirement, REQUIREMENTS, SELLER_TYPES } from '@/lib/config';
 import { demoPayments } from '@/lib/payments';
 import { completeRequirement, saveDetails } from '@/app/actions/seller';
@@ -18,7 +18,7 @@ export default async function SetupPage({ searchParams }: { searchParams: Promis
   if (!p) redirect('/sell');
   const reqs = REQUIREMENTS[p.type];
   const state = getRequirements(user.id);
-  const doneCount = reqs.filter((r) => state[r.key]?.done).length + (p.pickup_address ? 1 : 0);
+  const doneCount = reqs.filter((r) => isRequirementDone(r.key, state[r.key])).length + (p.pickup_address ? 1 : 0);
   const total = reqs.length + 1;
   const locked = p.status === 'pending' || p.status === 'suspended';
   const isBaker = p.type === 'baker';
@@ -73,7 +73,7 @@ function Done({ on }: { on: boolean }) {
 }
 
 function RequirementCard({ r, s, locked }: { r: Requirement; s?: RequirementState; locked: boolean }) {
-  const done = !!s?.done;
+  const done = isRequirementDone(r.key, s);
   const files: string[] = s ? JSON.parse(s.files) : [];
   return (
     <form id={r.key} action={completeRequirement} className="card flex scroll-mt-4 flex-col gap-3 p-4">

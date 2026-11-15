@@ -5,7 +5,7 @@ import { I, Icon } from '@/components/Icons';
 import { Alert } from '@/components/ui';
 import { Badges, distanceText } from '@/components/ListingCard';
 import { CATEGORIES } from '@/lib/config';
-import { getListing, getSellerProfile, isListingAvailable } from '@/lib/data';
+import { getListing, getSellerProfile, isListingAvailable, sellerCanBePaid } from '@/lib/data';
 import { money, pickupWindow } from '@/lib/format';
 import { demoPayments } from '@/lib/payments';
 import { viewerNeighborhood } from '@/lib/viewer';
@@ -20,7 +20,7 @@ export default async function ListingPage({ params, searchParams }: { params: Pr
   const l = getListing(id, hood.name);
   if (!l) notFound();
   const seller = getSellerProfile(l.seller_id);
-  const available = isListingAvailable(l, seller?.status);
+  const available = isListingAvailable(l, seller?.status) && sellerCanBePaid(l.seller_id);
   const isOwn = user?.id === l.seller_id;
 
   return (
