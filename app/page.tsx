@@ -45,7 +45,7 @@ export default async function Discover({ searchParams }: { searchParams: Promise
             </AutoSubmitSelect>
             <noscript><button className="text-sm underline">Go</button></noscript>
           </form>
-          <span className="shrink-0 pl-3 font-display text-xl font-bold text-leaf">stoopside</span>
+          <span className="shrink-0 pl-3 font-display text-xl font-bold text-leaf">borough grown</span>
         </div>
         <Alert notice={sp.notice} />
         <h1 className="font-display text-[32px] font-bold leading-[1.05] tracking-tight">Fresh near you</h1>

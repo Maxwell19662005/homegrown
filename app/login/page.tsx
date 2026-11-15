@@ -8,7 +8,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   const next = sp.next ?? '/';
   return (
     <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-6 px-5 py-10">
-      <Link href="/" className="font-display text-xl font-bold text-leaf">stoopside</Link>
+      <Link href="/" className="font-display text-xl font-bold text-leaf">borough grown</Link>
       <h1 className="h1">Welcome back</h1>
       <Alert error={sp.error} />
       <form action={login} className="flex flex-col gap-4">

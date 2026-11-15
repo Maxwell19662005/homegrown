@@ -6,8 +6,8 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const display = Bricolage_Grotesque({ subsets: ['latin'], variable: '--font-display', weight: ['600', '700'] });
 
 export const metadata: Metadata = {
-  title: 'Stoopside — grown on your block',
-  applicationName: 'Stoopside',
+  title: 'Borough Grown — fresh from your neighbors',
+  applicationName: 'Borough Grown',
   description: 'Buy backyard produce, home-baked goods, seedlings and farm boxes from people near you in NYC.',
 };
 

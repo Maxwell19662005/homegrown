@@ -9,7 +9,7 @@ export default async function SignupPage({ searchParams }: { searchParams: Promi
   const next = sp.next ?? '/';
   return (
     <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-6 px-5 py-10">
-      <Link href="/" className="font-display text-xl font-bold text-leaf">stoopside</Link>
+      <Link href="/" className="font-display text-xl font-bold text-leaf">borough grown</Link>
       <div className="flex flex-col gap-2">
         <h1 className="h1">Join your neighbors</h1>
         <p className="text-[15px] text-muted">Buy fresh food grown and made nearby. Free to join.</p>

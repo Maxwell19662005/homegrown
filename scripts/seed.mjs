@@ -50,7 +50,7 @@ const HOODS = { Ridgewood: [40.7043, -73.9018], Bushwick: [40.6944, -73.9213], M
 const sellers = [
   { email: 'rosa@example.com', name: 'Rosa', shop: 'Rosa’s Backyard', type: 'grower', hood: 'Ridgewood', bio: 'Heirloom tomatoes and herbs from my backyard since 2015.' },
   { email: 'dee@example.com', name: 'Dee', shop: 'Dee’s Kitchen', type: 'baker', hood: 'Bushwick', bio: 'Naturally leavened bread, baked in small batches.' },
-  { email: 'coop@example.com', name: 'Sam', shop: 'The Coop on Cornelia', type: 'grower', hood: 'Ridgewood', bio: 'Four happy backyard hens.' },
+  { email: 'coop@example.com', name: 'Sam', shop: 'The Coop on Cornelia', type: 'grower', hood: 'Ridgewood', bio: 'A small backyard herb garden.' },
   { email: 'kofi@example.com', name: 'Kofi', shop: 'Kofi Grows', type: 'plants', hood: 'Ridgewood', bio: 'Seedlings started indoors from seed.' },
   { email: 'farm@example.com', name: 'Lena', shop: 'Little Creek Farm', type: 'farm', hood: 'Ridgewood', bio: 'A family farm upstate, in the city every Saturday.' },
   { email: 'bees@example.com', name: 'Quinn', shop: 'Rooftop Bees Queens', type: 'grower', hood: 'Maspeth', bio: 'Rooftop hives across Queens.' },
@@ -78,7 +78,7 @@ const at = (h) => new Date(base + h * 3600000).toISOString();
 const listings = [
   ['Rosa’s Backyard', 'produce', 'Heirloom cherry tomatoes', 'Sungold and Black Cherry, picked this morning. No sprays.', 'per pint', 500, 6, 16, 19],
   ['Dee’s Kitchen', 'baked', 'Sourdough country loaf', '24-hour ferment, baked this afternoon in a registered home kitchen.', 'per loaf', 900, 4, 15, 18, 'Wheat'],
-  ['The Coop on Cornelia', 'eggs', 'Backyard eggs, half dozen', 'From four backyard hens, collected daily. Keep refrigerated after pickup.', 'per half dozen', 600, 3, 17, 20],
+  ['The Coop on Cornelia', 'produce', 'Garden mint, big bunch', 'Spearmint and chocolate mint from a backyard bed. Great for tea.', 'per bunch', 300, 8, 17, 20],
   ['Kofi Grows', 'plants', 'Pepper & tomato seedlings', 'Jalapeño, shishito and San Marzano. Ready to pot up.', 'each', 400, 12, 33, 36],
   ['Little Creek Farm', 'farm', 'Weekly veggie box', '8–10 seasonal items from our farm upstate.', 'per box', 2800, 10, 34, 37],
   ['Rooftop Bees Queens', 'eggs', 'Raw wildflower honey, 8 oz', 'Unfiltered and unheated, from rooftop hives in Queens.', 'per jar', 1200, 7, 18, 20],

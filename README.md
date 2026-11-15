@@ -1,8 +1,8 @@
-# Stoopside
+# Borough Grown
 
-A neighborhood food marketplace for NYC. People buy backyard produce, eggs and honey, seedlings, farm boxes and home-baked goods from neighbors, reserve and pay in the app, and pick up locally. There's no delivery.
+A neighborhood food marketplace for NYC. People buy backyard produce, honey, seedlings, farm boxes and home-baked goods from neighbors, reserve and pay in the app, and pick up locally. There's no delivery.
 
-Grown on your block. (The repository, database file and Railway project keep the earlier working name "homegrown" so existing data and deploys aren't disturbed.)
+Fresh from your neighbors. (The repository, database file and Railway project keep the earlier working name "homegrown" so existing data and deploys aren't disturbed.)
 
 ## What's built
 
