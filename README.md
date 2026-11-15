@@ -1,8 +1,8 @@
-# Homegrown
+# Stoopside
 
 A neighborhood food marketplace for NYC. People buy backyard produce, eggs and honey, seedlings, farm boxes and home-baked goods from neighbors, reserve and pay in the app, and pick up locally. There's no delivery.
 
-"Homegrown" is a working name. Change it in `app/layout.tsx` and the `homegrown` wordmarks.
+Grown on your block. (The repository, database file and Railway project keep the earlier working name "homegrown" so existing data and deploys aren't disturbed.)
 
 ## What's built
 
